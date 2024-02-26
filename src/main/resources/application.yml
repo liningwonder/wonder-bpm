@@ -1,0 +1,115 @@
+#Server Config
+server:
+  port: 8081
+  tomcat:
+    #org.springframework.boot.autoconfigure.web.ServerProperties
+    #Character encoding to use to decode the URI.
+    uri-encoding: UTF-8
+    #Maximum number of connections that the server accepts and processes at any given time.
+    #Once the limit has been reached, the operating system may still accept connections based on the "acceptCount" property.
+    #Tomcat的最大连接数，默认是8192
+    #当连接数大于maxConnections+acceptCount + 1时，
+    #新来的请求不会收到服务器拒绝连接响应，而是不会和新的请求进行3次握手建立连接，一段时间后（客户端的超时时间或者Tomcat的20s后）会出现请求连接超时。
+    max-connections: 8192
+    #Maximum queue length for incoming connection requests when all possible request processing threads are in use.
+    #Tomcat的连接等待队列长度，默认是100
+    accept-count: 100
+    #Amount of time the connector will wait, after accepting a connection, for the request URI line to be presented.
+    #Tomcat的连接超时时间，默认是20s 默认单位是毫秒
+    connection-timeout: 5s
+    #在关闭连接之前等待另一个 HTTP 请求的时间。如果未设置，则使用 connectionTimeout。设置为 -1 时不会超时。
+    keep-alive-timeout: 20000
+    #在连接关闭之前可以进行流水线处理的最大HTTP请求数量。
+    #当设置为0或1时，禁用keep-alive和流水线处理。当设置为-1时，允许无限数量的流水线处理或keep-alive请求。
+    max-keep-alive-requests: 100
+    #Maximum size of the form content in any HTTP post request
+    max-http-form-post-size: 10MB
+    threads:
+      #Maximum amount of worker threads.
+      #Tomcat的最大线程数，默认是200
+      max: 200
+      #Minimum amount of worker threads.
+      #Tomcat的最小工作线程数，默认是10
+      min-spare: 10
+  servlet:
+    encoding:
+      charset: UTF-8
+    context-path: /wonder-bpm
+
+#Application Config
+spring:
+  application:
+    name: wonder-bpm
+  servlet:
+    multipart:
+      #Max file size.
+      max-file-size: 50MB
+      #Max request size.
+      max-request-size: 10MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  datasource:
+    url: jdbc:mysql://192.168.67.11:3306/wonder_bpm?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true
+    username: root
+    password: Lining@1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: 123456
+    lettuce:
+      pool:
+        # 连接池最大连接数
+        max-active: 200
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1ms
+        # 连接池中的最大空闲连接
+        max-idle: 10
+        # 连接池中的最小空闲连接
+        min-idle: 0
+
+mybatis:
+  mapper-locations:
+    - classpath*:/mapper/*.xml
+  configuration:
+    call-setters-on-nulls: true
+
+management:
+  endpoints:
+    enabled-by-default: false
+
+logging:
+  level:
+    root: debug
+
+camunda:
+  bpm:
+    admin-user:
+      id: demo
+      password: demo
+      first-name: demo
+    filter:
+      create: show all
+    auto-deployment-enabled: false
+    database:
+      schema-update: false
+    history-level: FULL
+
+sa-token:
+  # token 名称（同时也是 cookie 名称）
+  token-name: token
+  # token前缀
+  token-prefix: Bearer
+  # token 有效期（单位：秒） 默认30天，-1 代表永久有效
+  timeout: 7200
+  # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
+  active-timeout: 600
+  # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
+  is-concurrent: false
+  # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
+  is-share: false
+  # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik） 自定义
+  #token-style: random-64
+  # 是否输出操作日志
+  is-log: true
